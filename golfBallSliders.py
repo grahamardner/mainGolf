@@ -1,6 +1,8 @@
 #  https://www.youtube.com/watch?v=5keGhpVizNA&index=5&list=PL9dP0m_Cqlh-s0-QY8OYheWzHDiHaqw5N
 # left off on #10
 
+# new comment
+
 import sys
 import cv2 as cv
 import numpy as np
