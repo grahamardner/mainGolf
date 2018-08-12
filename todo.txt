@@ -1,0 +1,22 @@
+- Finish all 15 videos (X X X X X X X X X O O O O O O)
+X Switch canny to be the filters we are using
+- try to make a drop down menu that lets you apply certain filters
+
+My list:
+
+
+from ball detect
+
+
+#####  Color Palette by Paletton.com
+#####  Palette URL: http://paletton.com/#uid=13B0u0kllll4y73cXectJsuNpFQ
+
+
+*** Primary color:
+
+   shade 0 = #2B4B6F = rgb( 43, 75,111) = rgba( 43, 75,111,1) = rgb0(0.169,0.294,0.435)
+   shade 1 = #0760C4 = rgb( 32, 34, 37) = rgba( 32, 34, 37,1) = rgb0(0.125,0.133,0.145)
+   shade 2 = #2E3B4A = rgb( 46, 59, 74) = rgba( 46, 59, 74,1) = rgb0(0.18,0.231,0.29)
+   shade 3 = #155194 = rgb( 21, 81,148) = rgba( 21, 81,148,1) = rgb0(0.082,0.318,0.58)
+   shade 4 = #0760C4 = rgb(  7, 96,196) = rgba(  7, 96,196,1) = rgb0(0.027,0.376,0.769)
+   #202225

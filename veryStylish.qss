@@ -1,0 +1,44 @@
+QWidget{
+  background-color: #222222;
+}
+
+QLineEdit {
+  /*background-color: #1e7b89;*/
+  color: #ffffff;
+  border: 1px solid #00aeff;
+  font-weight: bold;
+}
+
+
+
+QPushButton {
+  background-color: rgba(0, 0, 0, 0);
+  border: 1px solid #00aeff;
+  border-radius: 2px;
+  color: #ffffff;
+  height: 20px;
+}
+
+QCheckBox {
+  color: #00aeff;
+  background-color:rgba(0, 0, 0, 0);
+}
+
+
+QGroupBox{
+
+  color: #00aeff;
+  background-color: #202225;
+
+}
+
+QSlider{
+
+  background-color: rgba(0, 0, 0, 0);
+
+}
+
+QLabel {
+  background-color: rgba(0, 0, 0, 0);
+  color: #00aeff;
+}
