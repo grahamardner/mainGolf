@@ -1,33 +1,50 @@
-#  https://www.youtube.com/watch?v=5keGhpVizNA&index=5&list=PL9dP0m_Cqlh-s0-QY8OYheWzHDiHaqw5N
-# left off on #10
-
-# new comment
-
 import sys
-import cv2 as cv
+import cv2
 import numpy as np
-# import qdarkstyle
+
+from PyQt5.QtWidgets import QApplication, QMessageBox, QMainWindow, QFileDialog, QColorDialog
+from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.uic import loadUi
 
 from PyQt5 import QtCore
 # from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QDialog, QApplication, QFileDialog, QMessageBox, QColorDialog
-from PyQt5.uic import loadUi
 
 
-class CoolMan(QDialog):
+class veryCoolMan(QMainWindow):
 
     def __init__(self):
+        super(veryCoolMan, self).__init__()
+        loadUi('masterComboUI.ui', self)
 
-        super(CoolMan, self).__init__()
-        loadUi('golfBallSlidersUI.ui', self)
+        self.startButton.clicked.connect(self.start_video)
+        self.stopButton.clicked.connect(self.stop_video)
+        self.nextButton.clicked.connect(self.next_frame)
+        self.loadButton.clicked.connect(self.load_video)
+        self.sendFrameButton.clicked.connect(self.sendImageToTab)
+
+        self.actionOpen.triggered.connect(self.load_video)
+        self.actionOpen.setShortcut("Ctrl+O")
+        self.actionCloseVideo.triggered.connect(self.close_video)
+        self.VideoImage = None
+        self.boolIsLoaded = True
+        self.blankImage = None
+
+        if self.boolIsLoaded is False:
+            self.startButton.setEnabled(False)
+            self.nextButton.setEnabled(False)
+            self.loadButton.setEnabled(False)
+            self.stopButton.setEnabled(False)
+
+        # the below are imports from the old golfballsliders.py file
+
         self.image = None
         self.processedImage = None
         self.imageIsLoaded = False
 
-        self.loadButton.clicked.connect(self.loadClicked)
-        self.saveButton.clicked.connect(self.saveClicked)
-        self.visionButton.clicked.connect(self.visionClicked)
+        self.loadButtonIM.clicked.connect(self.loadClicked)
+        self.saveButtonIM.clicked.connect(self.saveClicked)
+        self.visionButtonIM.clicked.connect(self.visionClicked)
 
         # connect the sliders to update the values for HSV
         self.uHSlider.valueChanged.connect(self.maskDetect)
@@ -59,23 +76,74 @@ class CoolMan(QDialog):
         self.ballESlider.valueChanged.connect(self.ballDetect)
         self.ballFSlider.valueChanged.connect(self.ballDetect)
 
-        self.startBallButton.clicked.connect(self.startBallClicked)
-        self.findButton.clicked.connect(self.ballDetectAlgo)
+        self.startBallButtonIM.clicked.connect(self.startBallClicked)
+        self.findButtonIM.clicked.connect(self.ballDetectAlgo)
 
         self.widthValue.returnPressed.connect(self.loadImage)
         self.heightValue.returnPressed.connect(self.loadImage)
-        self.colorButton.clicked.connect(self.openColorDialog)
+        self.colorButtonIM.clicked.connect(self.openColorDialog)
 
         self.chkDilate.stateChanged.connect(self.dilateMaskImage)
         self.chkClose.stateChanged.connect(self.dilateMaskImage)
 
-        self.firstFrame.setStyleSheet("QFrame#firstFrame {background-color: #202225}")
-        self.firstFrame_2.setStyleSheet("QFrame#firstFrame_2 {background-color: #202225}")
-        self.firstFrame_3.setStyleSheet("QFrame#firstFrame_3 {background-color: #202225}")
-        self.firstFrame_5.setStyleSheet("QFrame#firstFrame_5 {background-color: #202225}")
-        self.firstFrame_6.setStyleSheet("QFrame#firstFrame_6 {background-color: #202225}")
-        # self.groupBox.setStyleSheet("QFrame#groupBox {background-color: #444444}")
-        # self.groupBox_2.setStyleSheet("QFrame#groupBox_2 {background-color: #444444}")
+    def close_video(self):
+        self.capture = None
+        self.display_image(self.blankImage, 1)
+
+    def load_video(self):
+
+        fname, filter = QFileDialog.getOpenFileName(self, 'Open Video File',
+                                                    'Z:\Programming Learning\Python\Golf',
+                                                    "Video Files (*.mpeg, *.avi)")
+        self.capture = cv2.VideoCapture(fname)
+        intFrameNum = self.capture.get(cv2.CAP_PROP_FRAME_COUNT)
+        self.frameNumberLabel.setText(str(intFrameNum))
+        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+
+    def start_video(self):
+        # self.capture = cv2.VideoCapture('p4.avi')
+        # self.capture = cv2.CaptureFromeFile('p4.avi')
+
+        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.update_frame()
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_frame)
+        self.timer.start(1000.0/30)
+
+    def next_frame(self):
+        ret, self.VideoImage = self.capture.read()
+
+        if self.VideoImage is None:
+            self.stop_video()
+        else:
+            self.display_image(self.VideoImage, 1)
+
+    def update_frame(self):
+        ret, self.VideoImage = self.capture.read()
+        self.currentImage = self.VideoImage.copy()
+        if self.VideoImage is None:
+            self.stop_video()
+        else:
+            self.display_image(self.VideoImage, 1)
+
+    def stop_video(self):
+        self.timer.stop()
+
+    def display_image(self, img, window=1):
+        qformat = QImage.Format_Indexed8
+        if len(img.shape) == 3:  # [0] rows, [1] cols, [2] channels
+            if img.shape[2] == 4:
+                qformat = QImage.Format_RGBA8888
+            else:
+                qformat = QImage.Format_RGB888
+        outImage = QImage(img, img.shape[1], img.shape[0], img.strides[0], qformat)
+        # BGR >> RGB
+        outImage = outImage.rgbSwapped()
+        if window == 1:
+            self.imgLabelVideo.setPixmap(QPixmap.fromImage(outImage))
+            self.imgLabelVideo.setScaledContents(True)
 
     def ballValueChanged(self):  # FCN gets changes in Ball Param Vals and calls ballDetect
 
@@ -113,7 +181,7 @@ class CoolMan(QDialog):
         self.loadButton.setAutoDefault(False)
         # self.ballDetect()
 
-    def startBallClicked(self):  # Gets the ball detection ready upon a click on the "start ball decect" button
+    def startBallClicked(self):  # Gets the ball detection ready upon a click on the "start ball decect" butto
         if self.imageIsLoaded is True:
             self.ballASlider.setValue(2)
             self.ballBSlider.setValue(140)
@@ -155,18 +223,18 @@ class CoolMan(QDialog):
         E = int(self.ballESlider.value())
         F = int(self.ballFSlider.value())
 
-        maskBlur = cv.medianBlur(self.justMaskedImage.copy(), 5)
+        maskBlur = cv2.medianBlur(self.justMaskedImage.copy(), 5)
 
-        circles = cv.HoughCircles(maskBlur, cv.HOUGH_GRADIENT, A, B,
-                                  param1=C, param2=D, minRadius=E, maxRadius=F)
+        circles = cv2.HoughCircles(maskBlur, cv2.HOUGH_GRADIENT, A, B,
+                                   param1=C, param2=D, minRadius=E, maxRadius=F)
 
         # if circles is not None:
         circles = np.uint16(np.around(circles))
         for i in circles[0, :]:
             # draw the outer circle
-            cv.circle(self.newCircleImage, (i[0], i[1]), i[2], (0, 255, 0), 2)
+            cv2.circle(self.newCircleImage, (i[0], i[1]), i[2], (0, 255, 0), 2)
             # draw the center of the circle
-            cv.circle(self.newCircleImage, (i[0], i[1]), 2, (0, 0, 255), 3)
+            cv2.circle(self.newCircleImage, (i[0], i[1]), 2, (0, 0, 255), 3)
 
         self.processedImage = self.newCircleImage
         self.displayImage(2)
@@ -184,7 +252,7 @@ class CoolMan(QDialog):
                 "QLabel#labelColorUpper {background-color: %s}" % colorMAN.name())
             self.colorNameValue.setText(str(colorMAN.name()))
 
-    def updateImage(self):  # deals with rotation (nothing else)
+    def updateImage(self):
         angle = int(self.rotateValue.text())
         self.loadButton.setDefault(False)
         self.loadButton.setAutoDefault(False)
@@ -195,7 +263,7 @@ class CoolMan(QDialog):
             QMessageBox.information(self, 'Error',
                                     'Please Enter Between 0 - 360')
 
-    def updateMaskImage(self):  # deals with rotation (nothing else)
+    def updateMaskImage(self):
 
         if int(self.uHValue.text()) > 0 and int(self.uHValue.text()) < 360:
             self.uHSlider.setValue(int(self.uHValue.text()))
@@ -242,7 +310,7 @@ class CoolMan(QDialog):
 
             ITERS = int(self.iterValue.text())
 
-            dilation = cv.dilate(self.processedImage, kernelSize, iterations=ITERS)
+            dilation = cv2.dilate(self.processedImage, kernelSize, iterations=ITERS)
             self.processedImage = dilation
             self.justMaskedImage = self.processedImage.copy()
             self.displayImage(2)
@@ -250,7 +318,7 @@ class CoolMan(QDialog):
         if self.chkClose.isChecked():
             kernelInt = int(self.kernelSizeValue.text())
             kernelSize = np.ones((kernelInt, kernelInt), np.uint8)
-            closing = cv.morphologyEx(self.processedImage, cv.MORPH_CLOSE, kernelSize)
+            closing = cv2.morphologyEx(self.processedImage, cv2.MORPH_CLOSE, kernelSize)
             self.processedImage = closing
             self.justMaskedImage = self.processedImage.copy()
             self.displayImage(2)
@@ -259,7 +327,7 @@ class CoolMan(QDialog):
 
         # "hsv" is an image file local to this function that saves the input
         # image as a file in the HSV color format
-        hsv = cv.cvtColor(self.image, cv.COLOR_BGR2HSV)
+        hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
 
         # these two arrays hold the upper and lower color bounds for the HSV mask
         lowerHSVVals = np.array(
@@ -274,7 +342,7 @@ class CoolMan(QDialog):
         self.lVValue.setText(str(self.lVSlider.value()))
 
         # make an image var called "mask" that takes the masked image for later use
-        mask = cv.inRange(hsv, lowerHSVVals, upperHSVVals)
+        mask = cv2.inRange(hsv, lowerHSVVals, upperHSVVals)
 
         self.processedImage = mask
         self.justMaskedImage = self.processedImage.copy()
@@ -300,6 +368,11 @@ class CoolMan(QDialog):
         else:
             QMessageBox.information(self, 'Error', 'No image loaded')
 
+    def sendImageToTab(self):
+        self.image = self.VideoImage.copy()
+        self.imageIsLoaded = True
+        self.maskDetect()
+
     def loadClicked(self):
         # self.loadImage('small.PNG')
         fname, filter = QFileDialog.getOpenFileName(self, 'Open File',
@@ -315,7 +388,7 @@ class CoolMan(QDialog):
         fname, filter = QFileDialog.getSaveFileName(
             self, 'Save File', 'Z:\Programming Learning\Python\Golf\PyQtAtomTEst')
         if fname:
-            cv.imwrite(fname, self.processedImage)
+            cv2.imwrite(fname, self.processedImage)
         else:
             print('Error')
 
@@ -329,11 +402,11 @@ class CoolMan(QDialog):
 
         # maybe ... :)
 
-        self.image = cv.imread(fname, cv.IMREAD_COLOR)
+        self.image = cv2.imread(fname, cv2.IMREAD_COLOR)
         if self.chkResize.isChecked():
             width = int(self.widthValue.text())
             height = int(self.heightValue.text())
-            self.image = cv.resize(self.image, (width, height))
+            self.image = cv2.resize(self.image, (width, height))
 
         self.processedImage = self.image.copy()
         self.displayImage(1)
@@ -362,16 +435,9 @@ class CoolMan(QDialog):
                                         QtCore.Qt.AlignVCenter)
 
 
-app = QApplication(sys.argv)
-
-window = CoolMan()
-
-window.setWindowTitle('Cool Man!')
-# window.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-
-# window.setWindowOpacity(1.0)
-window.setStyleSheet(open("veryStylish.qss", "r").read())
-# don't want this because it won't re size to fit the image
-# window.setGeometry(200, 200, 400, 200)
-window.show()
-sys.exit(app.exec_())
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = veryCoolMan()
+    window.setWindowTitle('Learning How To Work With Video')
+    window.show()
+    sys.exit(app.exec())
