@@ -54,6 +54,10 @@ class veryCoolMan(QMainWindow):
         self.lSSlider.valueChanged.connect(self.maskDetect)
         self.lVSlider.valueChanged.connect(self.maskDetect)
 
+        # connect video start / end frame sliders to change those values
+        self.videoFrontSlider.valueChanged.connect(self.slider_frame_numbers)
+        self.videoBackSlider.valueChanged.connect(self.slider_frame_numbers)
+
         # connect the text boxes to update the values for HSV
         self.uHValue.returnPressed.connect(self.updateMaskImage)
         self.uSValue.returnPressed.connect(self.updateMaskImage)
@@ -86,27 +90,50 @@ class veryCoolMan(QMainWindow):
         self.chkDilate.stateChanged.connect(self.dilateMaskImage)
         self.chkClose.stateChanged.connect(self.dilateMaskImage)
 
-    def close_video(self):
+    def close_video(self):  # TFIB :(
         self.capture = None
         self.display_image(self.blankImage, 1)
 
-    def load_video(self):
+    def load_video(self):  # loads video file and sets up the environment
 
         fname, filter = QFileDialog.getOpenFileName(self, 'Open Video File',
                                                     'Z:\Programming Learning\Python\Golf',
                                                     "Video Files (*.mpeg, *.avi)")
+        # Makes a global var to hold the video file
         self.capture = cv2.VideoCapture(fname)
-        intFrameNum = self.capture.get(cv2.CAP_PROP_FRAME_COUNT)
-        self.frameNumberLabel.setText(str(intFrameNum))
+
+        # pretty self explanatory
+        intFrameCount = self.capture.get(cv2.CAP_PROP_FRAME_COUNT)
+        self.frameNumberLabel.setText(str(intFrameCount))
+
+        # sets up the sliders' min and max values relative to how many frames the video contains
+        self.videoFrontSlider.setMinimum(0)
+        self.videoFrontSlider.setMaximum(intFrameCount)
+        self.videoBackSlider.setMinimum(0)
+        self.videoBackSlider.setMaximum(intFrameCount)
+        self.videoPositionSlider.setMinimum(0)
+        self.videoPositionSlider.setMaximum(intFrameCount)
+
+        # sets the initial start and end point to be the start and end of the video
+        self.startFrameNum = 0
+        self.endFrameNum = intFrameCount
+
+        # sets the resolution for the imported video.  This should be adjusted to flex with
+        # each video's particular resolution
         self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+
+    def slider_frame_numbers(self):
+        self.startFrameNum = self.videoFrontSlider.value()
+        self.endFrameNum = self.videoBackSlider.value()
 
     def start_video(self):
+        print('start')
         # self.capture = cv2.VideoCapture('p4.avi')
         # self.capture = cv2.CaptureFromeFile('p4.avi')
-
         self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        self.capture.set(cv2.CAP_PROP_POS_FRAMES, self.startFrameNum)
         self.update_frame()
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
@@ -121,12 +148,19 @@ class veryCoolMan(QMainWindow):
             self.display_image(self.VideoImage, 1)
 
     def update_frame(self):
-        ret, self.VideoImage = self.capture.read()
-        self.currentImage = self.VideoImage.copy()
-        if self.VideoImage is None:
+        intCurrentFrame = self.capture.get(cv2.CAP_PROP_POS_FRAMES)
+        if intCurrentFrame >= self.endFrameNum:
             self.stop_video()
         else:
-            self.display_image(self.VideoImage, 1)
+            ret, self.VideoImage = self.capture.read()
+            # copies the current frame so it can be sent to image tab if desired
+            if self.VideoImage is None:
+                print('got to stop video')
+                self.stop_video()
+            else:
+                self.videoPositionSlider.setValue(intCurrentFrame+1)
+                self.currentImage = self.VideoImage.copy()
+                self.display_image(self.VideoImage, 1)
 
     def stop_video(self):
         self.timer.stop()
@@ -202,11 +236,7 @@ class veryCoolMan(QMainWindow):
         self.ballEValue.setText(str(self.ballESlider.value()))
         self.ballFValue.setText(str(self.ballFSlider.value()))
 
-        # self.justMaskedImage = self.processedImage.copy()
-        # fullyOriginalImage = self.image.copy()
         self.newCircleImage = self.image.copy()
-
-        # self.ballDetectAlgo()
 
     def ballDetectAlgo(self):
         A = 0

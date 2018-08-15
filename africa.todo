@@ -7,3 +7,12 @@ Explore funcionality / tools:
   ✔ Make 1 tab for finding HSV vals @done(2018-08-12 21:01) @project(Explore funcionality / tools)
   ☐ Send all relevant values to a global variable
   ☐ Send values back to video editor
+  ☐ Add slider that can scroll through video based upon the # of frames
+  ✔ Add sliders that can set a start and final frame into a video snippet @done(2018-08-14 22:16) @project(Explore funcionality / tools)
+  ☐ Add save video snippet capability
+  ✔ Add play the snippet capability @done(2018-08-14 22:16) @project(Explore funcionality / tools)
+  ☐ Implement the tutorial for ball tracking first in a sandbox file
+  ☐ Now implement the ball tracking for the P4.avi file
+  ☐ Gray out all buttons until they should be used (this will be a ton of work)
+  ☐ Gray out buttons on Image Tab
+  ☐ Gray out buttons on Video Tab
