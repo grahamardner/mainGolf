@@ -1,18 +1,18 @@
 Explore funcionality / tools:
   ✔ Get 1 or more videos of puts off of youtube @done(2018-08-11 13:12) @project(Explore funcionality / tools)
-  ☐ Try out blob detect
-  ☐ Get coordinates from blob
+  ✔ Try out blob detect @done(2018-08-15 20:19) @project(Explore funcionality / tools)
+  ✔ Get coordinates from blob @done(2018-08-15 20:19) @project(Explore funcionality / tools)
   ✔ Add tab view in GUI @done(2018-08-12 19:13) @project(Explore funcionality / tools)
   ✔ Make 1 tab for loading Video @done(2018-08-12 19:13) @project(Explore funcionality / tools)
   ✔ Make 1 tab for finding HSV vals @done(2018-08-12 21:01) @project(Explore funcionality / tools)
   ☐ Send all relevant values to a global variable
   ☐ Send values back to video editor
-  ☐ Add slider that can scroll through video based upon the # of frames
+  ✔ Add slider that can scroll through video based upon the # of frames @done(2018-08-15 20:19) @project(Explore funcionality / tools)
   ✔ Add sliders that can set a start and final frame into a video snippet @done(2018-08-14 22:16) @project(Explore funcionality / tools)
   ☐ Add save video snippet capability
   ✔ Add play the snippet capability @done(2018-08-14 22:16) @project(Explore funcionality / tools)
   ☐ Implement the tutorial for ball tracking first in a sandbox file
-  ☐ Now implement the ball tracking for the P4.avi file
+  ✔ Now implement the ball tracking for the P4.avi file @done(2018-08-15 18:15) @project(Explore funcionality / tools)
   ☐ Gray out all buttons until they should be used (this will be a ton of work)
   ☐ Gray out buttons on Image Tab
   ☐ Gray out buttons on Video Tab

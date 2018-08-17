@@ -3,19 +3,23 @@ import cv2
 import numpy as np
 
 # Read image
-im = cv2.imread("blob.jpg", cv2.IMREAD_GRAYSCALE)
+im = cv2.imread("testBRO.jpeg", cv2.IMREAD_GRAYSCALE)
+
+
+im = cv2.bitwise_not(im)
+# im = cv2.GaussianBlur(im, (23, 23), 0)
 
 # Setup SimpleBlobDetector parameters.
 params = cv2.SimpleBlobDetector_Params()
 
 # Change thresholds
 params.minThreshold = 10
-params.maxThreshold = 200
+params.maxThreshold = 150
 
 
 # Filter by Area.
 params.filterByArea = True
-params.minArea = 1500
+params.minArea = 15
 
 # Filter by Circularity
 params.filterByCircularity = True
@@ -39,7 +43,14 @@ else:
 
 # Detect blobs.
 keypoints = detector.detect(im)
+print(keypoints)
 
+x = keypoints[0].pt[0]
+y = keypoints[0].pt[1]
+s = keypoints[0].size
+print(x)
+print(y)
+print(s)
 # Draw detected blobs as red circles.
 # cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures
 # the size of the circle corresponds to the size of blob
