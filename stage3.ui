@@ -40,8 +40,8 @@
       <property name="geometry">
        <rect>
         <x>1200</x>
-        <y>150</y>
-        <width>191</width>
+        <y>10</y>
+        <width>241</width>
         <height>161</height>
        </rect>
       </property>
@@ -157,9 +157,9 @@
       <property name="geometry">
        <rect>
         <x>1200</x>
-        <y>10</y>
-        <width>191</width>
-        <height>121</height>
+        <y>190</y>
+        <width>241</width>
+        <height>541</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -199,6 +199,572 @@
        </property>
        <property name="text">
         <string>BALL TRACKING</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_12">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>80</y>
+         <width>211</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+         <underline>false</underline>
+        </font>
+       </property>
+       <property name="text">
+        <string>Ball Track Params from Image Tab</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblThreshTrueVT">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>390</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblAreaTrueVT">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>450</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>390</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Thresholding:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_10">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>410</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Minimum</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_11">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>450</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Filter By Area:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblThreshMinVT">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>410</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_13">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>430</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Maximum</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblThreshMaxVT">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>430</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblMinAreaVT">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>470</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_14">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>470</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Minimum Area:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblCircTrueVT">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>490</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_15">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>490</y>
+         <width>101</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Filter By Circularity:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblMinCircVT">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>510</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_16">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>510</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>% Circularity:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_17">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>370</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Ball Tracking:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblBallTrackTrueVT">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>370</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblDilateTrueVT">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>300</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_18">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>280</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Close:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_19">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>320</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Kernel Size:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblCloseTrueVT">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>280</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_20">
+       <property name="geometry">
+        <rect>
+         <x>50</x>
+         <y>300</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Dilate:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_21">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>340</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Iterations:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblIterVT">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>340</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_22">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>260</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Morphology:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblMorphTrueVT">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>260</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblKernelSizeVT">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>320</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblUH">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>130</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_23">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>130</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Hue</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_24">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>110</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>InRange HSV:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblHSVTrueVT">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>110</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_25">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>150</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Saturation:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_26">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>170</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Value:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_27">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>190</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Hue:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_28">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>210</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Saturation:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_29">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>230</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Value:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_30">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>130</y>
+         <width>31</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Upper</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_31">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>190</y>
+         <width>31</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Lower</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblUS">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>150</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblUV">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>170</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblLH">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>190</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblLS">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>210</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="lblLV">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>230</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
        </property>
       </widget>
      </widget>
@@ -364,9 +930,9 @@
       <property name="geometry">
        <rect>
         <x>1200</x>
-        <y>330</y>
-        <width>191</width>
-        <height>161</height>
+        <y>750</y>
+        <width>241</width>
+        <height>71</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -378,8 +944,8 @@
       <widget class="QPushButton" name="sendFrameButton">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>110</y>
+         <x>20</x>
+         <y>20</y>
          <width>151</width>
          <height>31</height>
         </rect>
@@ -573,11 +1139,11 @@
          <x>10</x>
          <y>10</y>
          <width>341</width>
-         <height>621</height>
+         <height>581</height>
         </rect>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="page">
         <property name="geometry">
@@ -585,7 +1151,7 @@
           <x>0</x>
           <y>0</y>
           <width>341</width>
-          <height>540</height>
+          <height>500</height>
          </rect>
         </property>
         <attribute name="label">
@@ -597,7 +1163,7 @@
            <x>10</x>
            <y>10</y>
            <width>311</width>
-           <height>291</height>
+           <height>481</height>
           </rect>
          </property>
          <widget class="QSlider" name="uHSlider">
@@ -1118,18 +1684,47 @@
            <string>3</string>
           </property>
          </widget>
-         <widget class="QCheckBox" name="chkInRangeMasking">
+         <widget class="QCheckBox" name="chkHSVCommitIT">
           <property name="geometry">
            <rect>
-            <x>20</x>
-            <y>20</y>
+            <x>10</x>
+            <y>450</y>
             <width>151</width>
             <height>31</height>
            </rect>
           </property>
           <property name="text">
-           <string>Enable inRange Masking</string>
+           <string>HSV Values OK to commit</string>
           </property>
+         </widget>
+         <widget class="QFrame" name="frame_9">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>10</y>
+            <width>271</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QCheckBox" name="chkInRangeMasking">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>151</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Enable inRange Masking</string>
+           </property>
+          </widget>
          </widget>
          <zorder>uHSlider</zorder>
          <zorder>uHValue</zorder>
@@ -1163,7 +1758,8 @@
          <zorder>labelHeight_15</zorder>
          <zorder>uSSlider_2</zorder>
          <zorder>uHValue_2</zorder>
-         <zorder>chkInRangeMasking</zorder>
+         <zorder>chkHSVCommitIT</zorder>
+         <zorder>frame_9</zorder>
         </widget>
        </widget>
        <widget class="QWidget" name="Morphology">
@@ -1172,7 +1768,7 @@
           <x>0</x>
           <y>0</y>
           <width>341</width>
-          <height>540</height>
+          <height>500</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1184,7 +1780,7 @@
            <x>0</x>
            <y>0</y>
            <width>331</width>
-           <height>411</height>
+           <height>481</height>
           </rect>
          </property>
          <property name="frameShape">
@@ -1193,93 +1789,151 @@
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <widget class="QCheckBox" name="chkClose">
+         <widget class="QCheckBox" name="chkMorphCommitIT">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>71</width>
+            <x>20</x>
+            <y>450</y>
+            <width>151</width>
             <height>31</height>
            </rect>
           </property>
           <property name="text">
-           <string>Close</string>
+           <string>Morph Values OK to commit</string>
           </property>
          </widget>
-         <widget class="QCheckBox" name="chkDilate">
+         <widget class="QFrame" name="frame_7">
           <property name="geometry">
            <rect>
-            <x>110</x>
+            <x>20</x>
             <y>10</y>
-            <width>71</width>
-            <height>31</height>
+            <width>291</width>
+            <height>41</height>
            </rect>
           </property>
-          <property name="text">
-           <string>Dilate</string>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
           </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QCheckBox" name="chkMorphVT">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>10</y>
+             <width>151</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Enable Morphology</string>
+           </property>
+          </widget>
          </widget>
-         <widget class="QLabel" name="labelHeight_12">
+         <widget class="QFrame" name="frame_8">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>40</y>
-            <width>61</width>
-            <height>16</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Kernel Size:</string>
-          </property>
-         </widget>
-         <widget class="QLabel" name="labelHeight_13">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
+            <x>20</x>
             <y>70</y>
-            <width>61</width>
-            <height>16</height>
+            <width>291</width>
+            <height>121</height>
            </rect>
           </property>
-          <property name="text">
-           <string>Iterations:</string>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
           </property>
-         </widget>
-         <widget class="QLineEdit" name="iterValue">
-          <property name="geometry">
-           <rect>
-            <x>80</x>
-            <y>70</y>
-            <width>21</width>
-            <height>21</height>
-           </rect>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>7</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>1</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="kernelSizeValue">
-          <property name="geometry">
-           <rect>
-            <x>80</x>
-            <y>40</y>
-            <width>21</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>7</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>5</string>
-          </property>
+          <widget class="QCheckBox" name="chkDilate">
+           <property name="geometry">
+            <rect>
+             <x>120</x>
+             <y>10</y>
+             <width>71</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Dilate</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="labelHeight_12">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>40</y>
+             <width>61</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Kernel Size:</string>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="kernelSizeValue">
+           <property name="geometry">
+            <rect>
+             <x>90</x>
+             <y>40</y>
+             <width>21</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>5</string>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="iterValue">
+           <property name="geometry">
+            <rect>
+             <x>90</x>
+             <y>70</y>
+             <width>21</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>1</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="labelHeight_13">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>70</y>
+             <width>61</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Iterations:</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chkClose">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>10</y>
+             <width>71</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Close</string>
+           </property>
+          </widget>
          </widget>
         </widget>
        </widget>
@@ -1289,7 +1943,7 @@
           <x>0</x>
           <y>0</y>
           <width>341</width>
-          <height>540</height>
+          <height>500</height>
          </rect>
         </property>
         <attribute name="label">
@@ -1301,7 +1955,7 @@
            <x>0</x>
            <y>0</y>
            <width>331</width>
-           <height>521</height>
+           <height>491</height>
           </rect>
          </property>
          <property name="frameShape">
@@ -1310,19 +1964,6 @@
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <widget class="QPushButton" name="findButtonIM">
-          <property name="geometry">
-           <rect>
-            <x>100</x>
-            <y>410</y>
-            <width>121</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>old useless button</string>
-          </property>
-         </widget>
          <widget class="QFrame" name="frame_3">
           <property name="geometry">
            <rect>
@@ -1651,8 +2292,34 @@
            </property>
           </widget>
          </widget>
+         <widget class="QCheckBox" name="chkBallDetectCommitIT">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>450</y>
+            <width>191</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Ball Detect Values OK to commit</string>
+          </property>
+         </widget>
         </widget>
        </widget>
+      </widget>
+      <widget class="QPushButton" name="btnCommitParamsIT">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>600</y>
+         <width>291</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Commit Ball Detect Parameters</string>
+       </property>
       </widget>
      </widget>
     </widget>

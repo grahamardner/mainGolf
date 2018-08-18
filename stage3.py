@@ -82,8 +82,10 @@ class veryCoolMan(QMainWindow):
 
         self.colorButtonIM.clicked.connect(self.IT_open_color_dialog)
 
-        self.chkDilate.stateChanged.connect(self.dilateMaskImage)
-        self.chkClose.stateChanged.connect(self.dilateMaskImage)
+        self.btnCommitParamsIT.clicked.connect(self.IT_check_commit_params)
+
+        self.chkDilate.stateChanged.connect(self.IT_IP_morphology)
+        self.chkClose.stateChanged.connect(self.IT_IP_morphology)
 
         self.chkBallDetect.stateChanged.connect(self.IT_enab_ball_detect)
         self.chkInRangeMasking.stateChanged.connect(self.IT_enab_masking)
@@ -94,9 +96,82 @@ class veryCoolMan(QMainWindow):
 
         # checks the state of the program and disables buttons as needed
         self.VT_update_button_status()
+        self.IT_update_button_status()
 
         # Sets startup tab to video tab
         self.tabWidget.setCurrentIndex(0)
+
+    def IT_check_commit_params(self):
+
+        if self.chkHSVCommitIT.isChecked():
+            if self.chkMorphCommitIT.isChecked():
+                if self.chkBallDetectCommitIT.isChecked():
+                    self.VT_ball_params()
+
+        else:
+            QMessageBox.information(self, 'Error', 'Not All Parameters Correct')
+
+    def VT_ball_params(self):
+
+        # Jump over to video tab
+        self.tabWidget.setCurrentIndex(0)
+
+        # Update all text labels to show the current settings
+
+        if self.chkInRangeMasking.isChecked():
+            self.lblHSVTrueVT.setText('True')
+
+            self.lblUH.setText(str(self.uHValue.text()))
+            self.lblUS.setText(str(self.uSValue.text()))
+            self.lblUV.setText(str(self.uVValue.text()))
+            self.lblLH.setText(str(self.lHValue.text()))
+            self.lblLS.setText(str(self.lSValue.text()))
+            self.lblLV.setText(str(self.lVValue.text()))
+        else:
+            self.lblHSVTrueVT.setText('False')
+
+        if self.chkMorphVT.isChecked():  # Check for all  morphology values
+            self.lblMorphTrueVT.setText('True')
+
+            if self.chkClose.isChecked():
+                self.lblCloseTrueVT.setText('True')
+            else:
+                self.lblCloseTrueVT.setText('False')
+
+            if self.chkClose.isChecked():
+                self.lblDilateTrueVT.setText('True')
+            else:
+                self.lblDilateTrueVT.setText('False')
+
+            self.lblKernelSizeVT.setText(str(self.kernelSizeValue.text()))
+            self.lblIterVT.setText(str(self.iterValue.text()))
+        else:
+            self.lblMorphTrueVT.setText('False')
+
+        if self.chkBallDetect.isChecked():
+            self.lblBallTrackTrueVT.setText('True')
+
+            if self.chkEnableThreshIT.isChecked():
+                self.lblThreshTrueVT.setText('True')
+                self.lblThreshMinVT.setText(str(self.valueThreshMinIT.text()))
+                self.lblThreshMaxVT.setText(str(self.valueThreshMaxIT.text()))
+
+            else:
+                self.lblThreshTrueVT.setText('False')
+
+            if self.chkFilterByAreaIT.isChecked():
+                self.lblAreaTrueVT.setText('True')
+                self.lblMinAreaVT.setText(str(self.valueFilterByAreaIT.text()))
+            else:
+                self.lblAreaTrueVT.setText('False')
+
+            if self.chkFilterByCircIT.isChecked():
+                self.lblCircTrueVT.setText('True')
+                self.lblMinCircVT.setText(str(self.valueFilterByCircIT.text()))
+            else:
+                self.lblCircTrueVT.setText('False')
+        else:
+            self.lblBallTrackTrueVT.setText('False')
 
     def VT_update_button_status(self):  # checks the state of the program and disables buttons as needed
 
@@ -262,6 +337,7 @@ class veryCoolMan(QMainWindow):
         self.tabWidget.setCurrentIndex(1)
 
         self.boolImageIsLoaded = True
+        self.IT_update_button_status()
 
         self.processedImage = self.globalImage.copy()
         self.IT_display_image(1)
@@ -270,9 +346,15 @@ class veryCoolMan(QMainWindow):
         self.timer.stop()
         # self.display_image(self.currentImage, 1)
 
-    def IT_check_box_set_button_status(self):   # Each time a checkbox is checked on the image tab
+    def IT_update_button_status(self):   # Each time a checkbox is checked on the image tab
                                                 # this function makes sure the right buttons get disabled
-        pass
+        if self.boolImageIsLoaded is False:
+            self.toolBox.setEnabled(False)
+            self.btnCommitParamsIT.setEnabled(False)
+
+        if self.boolImageIsLoaded is True:
+            self.toolBox.setEnabled(True)
+            self.btnCommitParamsIT.setEnabled(True)
 
     def IT_enab_masking(self):  # enables inRange masking in IT, sets default vals and calls mask
         self.uHSlider.setValue(359)
@@ -282,7 +364,8 @@ class veryCoolMan(QMainWindow):
         self.lSSlider.setValue(0)
         self.lVSlider.setValue(39)
 
-        self.IT_IP_inrange_mask()
+        if self.boolImageIsLoaded is True:
+            self.IT_IP_inrange_mask()
 
     def IT_enab_ball_detect(self):  # enables ball detect in IT, sets default vals and calls ball detect
 
@@ -294,7 +377,7 @@ class veryCoolMan(QMainWindow):
         self.sliderThreshMinIT.setValue(10)
         self.sliderThreshMaxIT.setValue(150)
         self.sliderFilterByAreaIT.setValue(120)
-        self.sliderFilterByCircIT.setValue(0.6)
+        self.sliderFilterByCircIT.setValue(60)
 
         # calls the ball detect method
         self.IT_IP_ball_detect()
@@ -333,13 +416,12 @@ class veryCoolMan(QMainWindow):
             QMessageBox.information(self, 'Error', 'No image loaded')
 
     def IT_IP_inrange_mask(self):  # Applies the inRange color mask to the image in the Image Tab
-
         # these two arrays hold the upper and lower color bounds for the HSV mask
         self.globalLowHSV = np.array(
             [self.lHSlider.value(), self.lSSlider.value(), self.lVSlider.value()])
         self.globalHighHSV = np.array(
             [self.uHSlider.value(), self.uSSlider.value(), self.uVSlider.value()])
-
+        print('got past those pesky matrices')
         # "hsv" is an image file local to this function that saves the input
         # image as a file in the HSV color format
         hsv = cv2.cvtColor(self.globalImage, cv2.COLOR_BGR2HSV)
@@ -348,8 +430,30 @@ class veryCoolMan(QMainWindow):
         mask = cv2.inRange(hsv, self.globalLowHSV, self.globalHighHSV)
 
         self.processedImage = mask
-        # self.justMaskedImage = self.processedImage.copy()
         self.IT_display_image(1)
+
+    def IT_IP_morphology(self):  # Applies morphology if desired
+        if self.chkDilate.isChecked():
+            # gets value as an int from the text field in the GUI
+            kernelInt = int(self.kernelSizeValue.text())
+
+            # makes a kernel matrix frot the dilation function
+            kernelSize = np.ones((kernelInt, kernelInt), np.uint8)
+
+            ITERS = int(self.iterValue.text())
+
+            dilation = cv2.dilate(self.processedImage, kernelSize, iterations=ITERS)
+            self.processedImage = dilation
+            self.justMaskedImage = self.processedImage.copy()
+            self.IT_display_image(1)
+
+        if self.chkClose.isChecked():
+            kernelInt = int(self.kernelSizeValue.text())
+            kernelSize = np.ones((kernelInt, kernelInt), np.uint8)
+            closing = cv2.morphologyEx(self.processedImage, cv2.MORPH_CLOSE, kernelSize)
+            self.processedImage = closing
+            self.justMaskedImage = self.processedImage.copy()
+            self.IT_display_image(1)
 
     def update_mask_slider_values(self):  # Updates mask slider values in IT
 
@@ -400,6 +504,7 @@ class veryCoolMan(QMainWindow):
 
         # if an image is loaded, call the update mask function
         if self.boolImageIsLoaded is True:
+            print('got past the true')
             self.IT_IP_inrange_mask()
         else:
             print('no image loaded')
@@ -439,29 +544,6 @@ class veryCoolMan(QMainWindow):
         if self.boolImageIsLoaded is True:
             self.IT_IP_ball_detect()
 
-    def dilateMaskImage(self):
-        if self.chkDilate.isChecked():
-            # gets value as an int from the text field in the GUI
-            kernelInt = int(self.kernelSizeValue.text())
-
-            # makes a kernel matrix frot the dilation function
-            kernelSize = np.ones((kernelInt, kernelInt), np.uint8)
-
-            ITERS = int(self.iterValue.text())
-
-            dilation = cv2.dilate(self.processedImage, kernelSize, iterations=ITERS)
-            self.processedImage = dilation
-            self.justMaskedImage = self.processedImage.copy()
-            self.IT_display_image(1)
-
-        if self.chkClose.isChecked():
-            kernelInt = int(self.kernelSizeValue.text())
-            kernelSize = np.ones((kernelInt, kernelInt), np.uint8)
-            closing = cv2.morphologyEx(self.processedImage, cv2.MORPH_CLOSE, kernelSize)
-            self.processedImage = closing
-            self.justMaskedImage = self.processedImage.copy()
-            self.IT_display_image(1)
-
     def MB_load_image(self):  # Load an image to be processed in the image tab
         # self.loadImage('small.PNG')
         fname, filter = QFileDialog.getOpenFileName(self, 'Open File',
@@ -469,8 +551,12 @@ class veryCoolMan(QMainWindow):
                                                     "Image Files (*.png, *.jpg)")
         if fname:
             self.boolImageIsLoaded = True
+            self.IT_update_button_status()
             self.processedImage = cv2.imread(fname, cv2.IMREAD_COLOR)
+            self.globalImage = self.processedImage.copy()
             self.IT_display_image(1)
+            # go over to the image tab to see the image you loaded
+            self.tabWidget.setCurrentIndex(1)
 
             # This code allows you to resize.  Old version of GUI has buttons for this functionality
 
