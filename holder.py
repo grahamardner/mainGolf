@@ -1,5 +1,8 @@
 # holder:
 
+    else:
+        QMessageBox.information(self, 'Error', 'No image loaded')
+
 
 def track_ball_m1(self):  # this function uses findContours to track ball
 
