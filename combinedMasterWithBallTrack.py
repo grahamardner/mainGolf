@@ -4,6 +4,7 @@ import sys
 import cv2
 import imutils
 import numpy as np
+import qdarkstyle
 from collections import deque
 
 
@@ -27,8 +28,6 @@ class veryCoolMan(QMainWindow):
         self.nextButton.clicked.connect(self.next_frame)
         self.sendFrameButton.clicked.connect(self.sendImageToTab)
 
-        self.trackButton.clicked.connect(self.track_ball_m2)
-
         self.actionOpen.triggered.connect(self.load_video)
         self.actionOpen.setShortcut("Ctrl+O")
         self.actionCloseVideo.triggered.connect(self.close_video)
@@ -36,13 +35,6 @@ class veryCoolMan(QMainWindow):
         self.boolIsLoaded = False
         self.blankImage = None
         self.sendImageHolder = None
-
-        if self.boolIsLoaded is False:
-            self.startButton.setEnabled(False)
-            self.nextButton.setEnabled(False)
-            self.stopButton.setEnabled(False)
-            self.trackButton.setEnabled(False)
-            self.sendFrameButton.setEnabled(False)
 
         # the below are imports from the old golfballsliders.py file
 
@@ -97,21 +89,47 @@ class veryCoolMan(QMainWindow):
         self.chkDilate.stateChanged.connect(self.dilateMaskImage)
         self.chkClose.stateChanged.connect(self.dilateMaskImage)
 
+        # checks the state of the program and disables buttons as needed
+        self.update_button_status()
+
+    def update_button_status(self):  # checks the state of the program and disables buttons as needed
+
+        if self.boolIsLoaded is True:
+            self.startButton.setEnabled(True)
+            self.nextButton.setEnabled(True)
+            self.stopButton.setEnabled(True)
+            self.sendFrameButton.setEnabled(True)
+
+        if self.boolIsLoaded is False:
+            self.startButton.setEnabled(False)
+            self.nextButton.setEnabled(False)
+            self.stopButton.setEnabled(False)
+            self.sendFrameButton.setEnabled(False)
+
     def close_video(self):  # TFIB (this function is broken)
         self.capture = None
         self.display_image(self.blankImage, 1)
 
     def load_video(self):  # loads video file and sets up the environment
 
+        # Get file name of video that you want to load
         fname, filter = QFileDialog.getOpenFileName(self, 'Open Video File',
                                                     'Z:\Programming Learning\Python\Golf',
                                                     "Video Files (*.mpeg, *.avi)")
         # Makes a global var to hold the video file
         self.capture = cv2.VideoCapture(fname)
 
-        # pretty self explanatory
+        # Gets total # of frames in video and makes the number globally available
         intFrameCount = self.capture.get(cv2.CAP_PROP_FRAME_COUNT)
         self.frameNumberLabel.setText(str(intFrameCount))
+
+        # Gets FPS of video and makes the number globally available
+        self.intFPS = self.capture.get(cv2.CAP_PROP_FPS)
+        self.labelFPS.setText(str(self.intFPS))
+
+        # Displays length of video
+        intVideoLength = intFrameCount / self.intFPS
+        self.labelVideoLengthSeconds.setText(str(intVideoLength))
 
         # sets up the sliders' min and max values relative to how many frames the video contains
         self.videoFrontSlider.setMinimum(0)
@@ -120,6 +138,7 @@ class veryCoolMan(QMainWindow):
         self.videoBackSlider.setMaximum(intFrameCount)
         self.videoPositionSlider.setMinimum(0)
         self.videoPositionSlider.setMaximum(intFrameCount)
+        self.videoBackSlider.setValue(intFrameCount)
 
         # sets the initial start and end point to be the start and end of the video
         self.startFrameNum = 0
@@ -131,22 +150,52 @@ class veryCoolMan(QMainWindow):
         self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 
         self.boolIsLoaded = True
+        self.update_button_status()
 
     def slider_frame_numbers(self):
         self.startFrameNum = self.videoFrontSlider.value()
-        self.endFrameNum = self.videoBackSlider.value()
+        self.endFrameNum = self.videoBackSlider.value()  # gets the start and stop positions (as frame #'s)
 
-    def play_video(self):
+    def play_video(self):  # plays the video from the starting frame # continuously
+
         # sets resolution for imported video.
         self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.capture.set(cv2.CAP_PROP_POS_FRAMES, self.startFrameNum)
-        self.update_frame()
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_frame)
-        self.timer.start(1000.0/30)
 
-    def next_frame(self):
+        if self.chkTrackBall.isChecked():  # play video with ball tracking enabled
+            self.pts = deque(maxlen=25)
+            self.greenLower = (0, 0, 39)
+            self.greenUpper = (359, 65, 254)
+
+            # Setup SimpleBlobDetector parameters.
+            self.params = cv2.SimpleBlobDetector_Params()
+
+            # Change thresholds
+            self.params.minThreshold = 10
+            self.params.maxThreshold = 150
+
+            # Filter by Area.
+            self.params.filterByArea = True
+            self.params.minArea = 120
+
+            # Filter by Circularity
+            self.params.filterByCircularity = True
+            self.params.minCircularity = 0.6
+
+            self.update_frame_tracker()
+            self.timer = QTimer(self)
+            self.timer.timeout.connect(self.update_frame_tracker)
+            self.timer.start(1000.0/30)
+
+        else:  # play video without ball tracking
+
+            self.update_frame()
+            self.timer = QTimer(self)
+            self.timer.timeout.connect(self.update_frame)
+            self.timer.start(1000.0/30)
+
+    def next_frame(self):  # shows only the next frame of the video
         ret, self.VideoImage = self.capture.read()
 
         if self.VideoImage is None:
@@ -154,7 +203,7 @@ class veryCoolMan(QMainWindow):
         else:
             self.display_image(self.VideoImage, 1)
 
-    def update_frame(self):
+    def update_frame(self):  # shows the next frame in the window without tracking
         intCurrentFrame = self.capture.get(cv2.CAP_PROP_POS_FRAMES)
         if intCurrentFrame >= self.endFrameNum:
             self.stop_video()
@@ -169,178 +218,67 @@ class veryCoolMan(QMainWindow):
                 self.currentImage = self.VideoImage.copy()
                 self.display_image(self.VideoImage, 1)
 
-    def stop_video(self):
+    def update_frame_tracker(self):  # shows the next frame in the window with tracking
+        intCurrentFrame = self.capture.get(cv2.CAP_PROP_POS_FRAMES)
+        if intCurrentFrame >= self.endFrameNum:
+            self.stop_video()
+        else:
+            ret, self.VideoImage = self.capture.read()
+            # copies the current frame so it can be sent to image tab if desired
+            if self.VideoImage is None:
+                print('got to stop video')
+                self.stop_video()
+            else:
+                frame = self.VideoImage
+                # frame = frame[1]
+
+                frame = imutils.resize(frame, width=600)
+                blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+                hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+
+                mask = cv2.inRange(hsv, self.greenLower, self.greenUpper)
+                mask = cv2.erode(mask, None, iterations=2)
+                mask = cv2.dilate(mask, None, iterations=2)
+
+                # flip black and white
+                mask = cv2.bitwise_not(mask)
+
+                # Create a detector with the parameters
+                detector = cv2.SimpleBlobDetector_create(self.params)
+
+                # Detect blobs.
+                keypoints = detector.detect(mask)
+
+                x = keypoints[0].pt[0]
+                y = keypoints[0].pt[1]
+                # s = keypoints[0].size  # diameter
+
+                self.pts.appendleft((int(x), int(y)))
+                # loop over the set of tracked points
+                for i in range(1, len(self.pts)):
+                    # if either of the tracked points are None, ignore
+                    # them
+                    if self.pts[i - 1] is None or self.pts[i] is None:
+                        continue
+
+                    # otherwise, compute the thickness of the line and
+                    # draw the connecting lines
+                    thickness = int(np.sqrt(64 / float(i + 1)) * 2.5)
+                    cv2.line(frame, self.pts[i - 1], self.pts[i], (0, 0, 255), thickness)
+
+                cv2.putText(frame, 'Ball 1', (int(x)+10, int(y)-10),
+                            cv2.FONT_HERSHEY_SIMPLEX,  .5, (50, 255, 50), 2)
+
+                self.videoPositionSlider.setValue(intCurrentFrame+1)
+                self.VideoImage = frame
+                self.currentImage = self.VideoImage.copy()
+                self.display_image(self.VideoImage, 1)
+
+    def stop_video(self):  # stops the video playback
         self.timer.stop()
+        # self.display_image(self.currentImage, 1)
 
-    def track_ball_m1(self):
-
-        pts = deque(maxlen=64)
-        greenLower = (0, 0, 39)
-        greenUpper = (359, 65, 254)
-        vs = self.capture
-        # self.imgLabelVideo.clear()
-
-        while True:
-
-            frame = vs.read()
-            # frame = self.capture.read()
-
-            frame = frame[1]
-
-            if frame is None:
-                break
-
-            frame = imutils.resize(frame, width=800)
-            blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-            hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
-
-            mask = cv2.inRange(hsv, greenLower, greenUpper)
-            mask = cv2.erode(mask, None, iterations=2)
-            mask = cv2.dilate(mask, None, iterations=2)
-
-            # find contours in the mask and initialize the current
-            # (x, y) center of the ball
-            cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
-                                    cv2.CHAIN_APPROX_SIMPLE)
-            cnts = cnts[0] if imutils.is_cv2() else cnts[1]
-            center = None
-
-            # jprint(cnts)
-
-            # only proceed if at least one contour was found
-            if len(cnts) > 0:
-                # find the largest contour in the mask, then use
-                # it to compute the minimum enclosing circle and
-                # centroid
-                c = min(cnts, key=cv2.contourArea)
-                ((x, y), radius) = cv2.minEnclosingCircle(c)
-                M = cv2.moments(c)
-                center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-
-            # only proceed if the radius meets a minimum size
-
-                # if radius < 500:
-                # draw the circle and centroid on the frame,
-                # then update the list of tracked points
-                cv2.circle(frame, (int(x), int(y)), int(radius),
-                           (0, 255, 255), 2)
-                cv2.circle(frame, center, 5, (0, 0, 255), -1)
-
-            # update the points queue
-            pts.appendleft(center)
-
-            # loop over the set of tracked points
-            for i in range(1, len(pts)):
-                # if either of the tracked points are None, ignore
-                # them
-                if pts[i - 1] is None or pts[i] is None:
-                    continue
-
-                # otherwise, compute the thickness of the line and
-                # draw the connecting lines
-                thickness = int(np.sqrt(64 / float(i + 1)) * 2.5)
-                cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
-
-            # show the frame to our screen
-            self.display_image(frame, 1)
-
-            key = cv2.waitKey(34) & 0xFF
-
-            if key == ord("q"):
-                break
-
-    def track_ball_m2(self):  # this function implements simpleBlob to track ball
-        self.slider_frame_numbers()
-        pts = deque(maxlen=25)
-        greenLower = (0, 0, 39)
-        greenUpper = (359, 65, 254)
-        vs = self.capture
-
-        while True:
-
-            frame = vs.read()
-            frame = frame[1]
-
-            if frame is None:
-                break
-
-            frame = imutils.resize(frame, width=1200)
-            blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-            hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
-
-            mask = cv2.inRange(hsv, greenLower, greenUpper)
-            mask = cv2.erode(mask, None, iterations=2)
-            mask = cv2.dilate(mask, None, iterations=2)
-
-            # flip black and white
-            mask = cv2.bitwise_not(mask)
-
-            # Setup SimpleBlobDetector parameters.
-            params = cv2.SimpleBlobDetector_Params()
-
-            # Change thresholds
-            params.minThreshold = 10
-            params.maxThreshold = 150
-
-            # Filter by Area.
-            params.filterByArea = True
-            params.minArea = 120
-
-            # Filter by Circularity
-            params.filterByCircularity = True
-            params.minCircularity = 0.6
-
-            # Filter by Convexity
-            # params.filterByConvexity = True
-            # params.minConvexity = 0.87
-
-            # Filter by Inertia
-            # params.filterByInertia = True
-            # params.minInertiaRatio = 0.01
-
-            # Create a detector with the parameters
-            detector = cv2.SimpleBlobDetector_create(params)
-
-            # Detect blobs.
-            keypoints = detector.detect(mask)
-            # print(keypoints)
-
-            x = keypoints[0].pt[0]
-            y = keypoints[0].pt[1]
-            s = keypoints[0].size  # diameter
-            # print(x)
-            # print(y)
-            # print(s)
-            pts.appendleft((int(x), int(y)))
-            # loop over the set of tracked points
-            for i in range(1, len(pts)):
-                # if either of the tracked points are None, ignore
-                # them
-                if pts[i - 1] is None or pts[i] is None:
-                    continue
-
-                # otherwise, compute the thickness of the line and
-                # draw the connecting lines
-                thickness = int(np.sqrt(64 / float(i + 1)) * 2.5)
-                cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
-
-            # im_with_keypoints = cv2.drawKeypoints(frame, keypoints, np.array(
-            #     []), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-            # cv2.circle(frame, (int(x), int(y)), 2, (255, 255, 0), -1)
-
-            # cv2.circle(frame, (int(x), int(y)), 2, (0, 255, 0), -1)
-            cv2.putText(frame, 'Ball 1', (int(x)+10, int(y)-10),
-                        cv2.FONT_HERSHEY_SIMPLEX,  .5, (50, 255, 50), 2)
-            # show the frame to our screen
-            self.display_image(frame, 1)
-
-            key = cv2.waitKey(34) & 0xFF
-
-            if key == ord("q"):
-                break
-
-    def display_image(self, img, window=1):
+    def display_image(self, img, window=1):  # actually paints the current frame into the label
         qformat = QImage.Format_Indexed8
         if len(img.shape) == 3:  # [0] rows, [1] cols, [2] channels
             if img.shape[2] == 4:
@@ -353,6 +291,7 @@ class veryCoolMan(QMainWindow):
         self.sendImageHolder = outImage
         if window == 1:
             self.imgLabelVideo.setPixmap(QPixmap.fromImage(outImage))
+
             self.imgLabelVideo.setScaledContents(True)
 
     def ballValueChanged(self):  # FCN gets changes in Ball Param Vals and calls ballDetect
@@ -414,7 +353,7 @@ class veryCoolMan(QMainWindow):
 
         self.newCircleImage = self.image.copy()
 
-    def ballDetectAlgo(self):
+    def ballDetectAlgo(self):  # Contains the algorithm for HoughCircles in Image Tab. Needs to be axed
         A = 0
         B = 0
         C = 0
@@ -447,7 +386,7 @@ class veryCoolMan(QMainWindow):
         # else:
         #    QMessageBox.information(self, 'Error', 'No Circles Found')
 
-    def openColorDialog(self):
+    def openColorDialog(self):  # Opens a color picker dialog box in Image Tab
         colorMAN = QColorDialog.getColor()
         if self.chkLower.isChecked():
             self.labelColor.setStyleSheet(
@@ -458,7 +397,7 @@ class veryCoolMan(QMainWindow):
                 "QLabel#labelColorUpper {background-color: %s}" % colorMAN.name())
             self.colorNameValue.setText(str(colorMAN.name()))
 
-    def updateImage(self):
+    def updateImage(self):  # Updates image shown in the Image Tab
         angle = int(self.rotateValue.text())
         self.loadButton.setDefault(False)
         self.loadButton.setAutoDefault(False)
@@ -647,6 +586,8 @@ class veryCoolMan(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = veryCoolMan()
-    window.setWindowTitle('Learning How To Work With Video')
+    # window.setStyleSheet(open("veryStylish.qss", "r").read())
+    window.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    window.setWindowTitle('Putt Tracker')
     window.show()
     sys.exit(app.exec())

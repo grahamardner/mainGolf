@@ -19,14 +19,14 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1401</width>
-      <height>900</height>
+      <width>1421</width>
+      <height>921</height>
      </rect>
     </property>
     <property name="maximumSize">
      <size>
-      <width>1401</width>
-      <height>900</height>
+      <width>1450</width>
+      <height>1000</height>
      </size>
     </property>
     <property name="currentIndex">
@@ -36,199 +36,12 @@
      <attribute name="title">
       <string>Video</string>
      </attribute>
-     <widget class="QLabel" name="imgLabelVideo">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>199</y>
-        <width>1091</width>
-        <height>621</height>
-       </rect>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::Box</enum>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="startButton">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>75</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::TabFocus</enum>
-      </property>
-      <property name="text">
-       <string>Play</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="stopButton">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>10</y>
-        <width>75</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::TabFocus</enum>
-      </property>
-      <property name="text">
-       <string>Pause</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="nextButton">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>10</y>
-        <width>75</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::TabFocus</enum>
-      </property>
-      <property name="text">
-       <string>Next Frame</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>850</x>
-        <y>80</y>
-        <width>91</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Number of Frames:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="frameNumberLabel">
-      <property name="geometry">
-       <rect>
-        <x>960</x>
-        <y>80</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>-</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="sendFrameButton">
-      <property name="geometry">
-       <rect>
-        <x>620</x>
-        <y>10</y>
-        <width>141</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::TabFocus</enum>
-      </property>
-      <property name="text">
-       <string>Send Frame To Image Tab</string>
-      </property>
-     </widget>
-     <widget class="QSlider" name="videoFrontSlider">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>40</y>
-        <width>611</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QSlider" name="videoBackSlider">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>70</y>
-        <width>611</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QSlider" name="videoPositionSlider">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>840</y>
-        <width>1281</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_3">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>40</y>
-        <width>31</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Start:</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_4">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>70</y>
-        <width>31</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>End:</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="trackButton">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>120</y>
-        <width>151</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="focusPolicy">
-       <enum>Qt::TabFocus</enum>
-      </property>
-      <property name="text">
-       <string>TRACK BALL!</string>
-      </property>
-     </widget>
      <widget class="QFrame" name="frame">
       <property name="geometry">
        <rect>
-        <x>840</x>
-        <y>20</y>
-        <width>441</width>
+        <x>1200</x>
+        <y>150</y>
+        <width>191</width>
         <height>161</height>
        </rect>
       </property>
@@ -241,7 +54,348 @@
       <property name="lineWidth">
        <number>2</number>
       </property>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>60</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Number of Frames:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="frameNumberLabel">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>60</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_6">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>90</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Video Frame Rate:</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelFPS">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>90</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_7">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>120</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Video Length (sec):</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="labelVideoLengthSeconds">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>120</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>10</y>
+         <width>161</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+         <underline>false</underline>
+        </font>
+       </property>
+       <property name="text">
+        <string>VIDEO INFORMATION</string>
+       </property>
+      </widget>
      </widget>
+     <widget class="QFrame" name="frameVideoTabTrackParams">
+      <property name="geometry">
+       <rect>
+        <x>1200</x>
+        <y>10</y>
+        <width>191</width>
+        <height>121</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QCheckBox" name="chkTrackBall">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>40</y>
+         <width>91</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Ball Tracking</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_9">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>10</y>
+         <width>161</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+         <underline>false</underline>
+        </font>
+       </property>
+       <property name="text">
+        <string>BALL TRACKING</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="frameVideoTabVideoPane">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>1171</width>
+        <height>811</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QLabel" name="imgLabelVideo">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>20</y>
+         <width>1081</width>
+         <height>601</height>
+        </rect>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Box</enum>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QSlider" name="videoFrontSlider">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>690</y>
+         <width>1061</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>690</y>
+         <width>31</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Start</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>720</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Current</string>
+       </property>
+      </widget>
+      <widget class="QSlider" name="videoPositionSlider">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>720</y>
+         <width>1061</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QSlider" name="videoBackSlider">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>750</y>
+         <width>1061</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>750</y>
+         <width>31</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>End</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="nextButton">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>640</y>
+         <width>81</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
+       </property>
+       <property name="text">
+        <string>Next Frame</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="startButton">
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>640</y>
+         <width>81</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
+       </property>
+       <property name="text">
+        <string>Play</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="stopButton">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>640</y>
+         <width>81</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
+       </property>
+       <property name="text">
+        <string>Pause</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="frameVideoTabMainButtons">
+      <property name="geometry">
+       <rect>
+        <x>1200</x>
+        <y>330</y>
+        <width>191</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QPushButton" name="sendFrameButton">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>110</y>
+         <width>151</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::TabFocus</enum>
+       </property>
+       <property name="text">
+        <string>Send Frame To Image Tab</string>
+       </property>
+      </widget>
+     </widget>
+     <zorder>frameVideoTabVideoPane</zorder>
+     <zorder>frame</zorder>
+     <zorder>frameVideoTabTrackParams</zorder>
+     <zorder>frameVideoTabMainButtons</zorder>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
