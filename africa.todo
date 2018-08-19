@@ -15,7 +15,7 @@ Explore funcionality / tools:
   ✔ Now implement the ball tracking for the P4.avi file @done(2018-08-15 18:15) @project(Explore funcionality / tools)
   ☐ Gray out all buttons until they should be used (this will be a ton of work)
   ☐ Gray out buttons on Image Tab
-  ☐ Gray out buttons on Video Tab
+  ✔ Gray out buttons on Video Tab @done(2018-08-18 21:01) @project(Explore funcionality / tools)
   ☐ Clean up the variable mess
   ☐ Rename functions with a consistent scheme
   ☐ Rename vars in with a consistent scheme also

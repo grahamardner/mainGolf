@@ -14,7 +14,6 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.uic import loadUi
 
 from PyQt5 import QtCore
-# from PyQt5.QtCore import pyqtSlot
 
 
 class veryCoolMan(QMainWindow):
@@ -48,7 +47,8 @@ class veryCoolMan(QMainWindow):
         # bools to see if things have been loaded
         self.boolImageIsLoaded = False
         self.boolVideoIsLoaded = False
-        self.boolTrackValsSet = False
+        self.boolBallTrackingPermitted = False
+        self.boolNeedsBWFlip = True
 
         # connect video start / end frame sliders to change those values
         self.videoFrontSlider.valueChanged.connect(self.VT_slider_frame_numbers)
@@ -73,11 +73,13 @@ class veryCoolMan(QMainWindow):
         self.valueThreshMinIT.returnPressed.connect(self.update_ball_detect_slider_values)
         self.valueThreshMaxIT.returnPressed.connect(self.update_ball_detect_slider_values)
         self.valueFilterByAreaIT.returnPressed.connect(self.update_ball_detect_slider_values)
+        self.valueFilterByAreaMaxIT.returnPressed.connect(self.update_ball_detect_slider_values)
         self.valueFilterByCircIT.returnPressed.connect(self.update_ball_detect_slider_values)
 
         self.sliderThreshMinIT.valueChanged.connect(self.update_ball_detect_textbox_values)
         self.sliderThreshMaxIT.valueChanged.connect(self.update_ball_detect_textbox_values)
         self.sliderFilterByAreaIT.valueChanged.connect(self.update_ball_detect_textbox_values)
+        self.sliderFilterByAreaMaxIT.valueChanged.connect(self.update_ball_detect_textbox_values)
         self.sliderFilterByCircIT.valueChanged.connect(self.update_ball_detect_textbox_values)
 
         self.colorButtonIM.clicked.connect(self.IT_open_color_dialog)
@@ -138,7 +140,7 @@ class veryCoolMan(QMainWindow):
             else:
                 self.lblCloseTrueVT.setText('False')
 
-            if self.chkClose.isChecked():
+            if self.chkDilate.isChecked():
                 self.lblDilateTrueVT.setText('True')
             else:
                 self.lblDilateTrueVT.setText('False')
@@ -187,10 +189,10 @@ class veryCoolMan(QMainWindow):
             self.stopButton.setEnabled(False)
             self.sendFrameButton.setEnabled(False)
 
-        if self.boolTrackValsSet is False:
+        if self.boolBallTrackingPermitted is False:
             self.chkTrackBall.setEnabled(False)
 
-        if self.boolTrackValsSet is True:
+        if self.boolBallTrackingPermitted is True:
             self.chkTrackBall.setEnabled(True)
 
     def VT_slider_frame_numbers(self):  # Updates start and stop points of video playback
@@ -377,6 +379,7 @@ class veryCoolMan(QMainWindow):
         self.sliderThreshMinIT.setValue(10)
         self.sliderThreshMaxIT.setValue(150)
         self.sliderFilterByAreaIT.setValue(120)
+        self.sliderFilterByAreaMaxIT.setValue(1000)
         self.sliderFilterByCircIT.setValue(60)
 
         # calls the ball detect method
@@ -403,17 +406,60 @@ class veryCoolMan(QMainWindow):
             self.params.maxThreshold = self.sliderThreshMaxIT.value()
 
             # Filter by Area.
-            self.params.filterByArea = True
-            self.params.minArea = self.sliderFilterByAreaIT.value()
+            if self.chkFilterByAreaIT.isChecked():
+                self.params.filterByArea = True
+                self.params.minArea = self.sliderFilterByAreaIT.value()
+                self.params.maxArea = self.sliderFilterByAreaMaxIT.value()
+            else:
+                self.params.filterByArea = False
 
             # Filter by Circularity
-            self.params.filterByCircularity = True
-            self.params.minCircularity = self.sliderFilterByCircIT.value()
+            if self.chkFilterByAreaIT.isChecked():
+                self.params.filterByCircularity = True
+                self.params.minCircularity = 0.6
+            else:
+                self.params.filterByCircularity = False
 
-            self.boolTrackValsSet = True
+            # Change thresholds
+            # self.params.minThreshold = self.sliderThreshMinIT.value()
+            # self.params.maxThreshold = self.sliderThreshMaxIT.value()
 
-        else:
-            QMessageBox.information(self, 'Error', 'No image loaded')
+            # Filter by Area.
+            # self.params.filterByArea = True
+            # self.params.minArea = self.sliderFilterByAreaIT.value()
+
+            # Filter by Circularity
+            # self.params.filterByCircularity = True
+            # self.params.minCircularity = 0.6
+            # self.params.minCircularity = self.sliderFilterByCircIT.value()
+            self.boolBallTrackingPermitted = True
+
+            # Perform SimpleBlobDetector Ball Detection
+            frame = self.processedImage
+            blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+
+            # if self.boolNeedsBWFlip is True:
+            mask = cv2.bitwise_not(blurred)
+            #    self.boolNeedsBWFlip = False
+
+            # Create a detector with the parameters
+            detector = cv2.SimpleBlobDetector_create(self.params)
+            holderHolder = self.globalImage
+            # Detect blobs.
+            keypoints = detector.detect(mask)
+            if len(keypoints) > 0:
+
+                x = keypoints[0].pt[0]
+                y = keypoints[0].pt[1]
+                # s = keypoints[0].size  # diameter
+                cv2.circle(holderHolder, (int(x), int(y)), 2, (0, 0, 255), -1)
+                cv2.putText(holderHolder, 'Ball 1', (int(x)+10, int(y)-10),
+                            cv2.FONT_HERSHEY_SIMPLEX,  .5, (50, 255, 50), 2)
+
+            else:
+                print('no keypoints found')
+            self.processedImage = holderHolder
+            self.IT_display_image(1)
 
     def IT_IP_inrange_mask(self):  # Applies the inRange color mask to the image in the Image Tab
         # these two arrays hold the upper and lower color bounds for the HSV mask
@@ -421,7 +467,6 @@ class veryCoolMan(QMainWindow):
             [self.lHSlider.value(), self.lSSlider.value(), self.lVSlider.value()])
         self.globalHighHSV = np.array(
             [self.uHSlider.value(), self.uSSlider.value(), self.uVSlider.value()])
-        print('got past those pesky matrices')
         # "hsv" is an image file local to this function that saves the input
         # image as a file in the HSV color format
         hsv = cv2.cvtColor(self.globalImage, cv2.COLOR_BGR2HSV)
@@ -500,11 +545,8 @@ class veryCoolMan(QMainWindow):
         self.lSValue.setText(str(self.lSSlider.value()))
         self.lVValue.setText(str(self.lVSlider.value()))
 
-        print('Im in update mask slider values')
-
         # if an image is loaded, call the update mask function
         if self.boolImageIsLoaded is True:
-            print('got past the true')
             self.IT_IP_inrange_mask()
         else:
             print('no image loaded')
@@ -514,22 +556,27 @@ class veryCoolMan(QMainWindow):
         if int(self.valueThreshMinIT.text()) > 0 and int(self.valueThreshMinIT.text()) < 20:
             self.sliderThreshMinIT.setValue(int(self.valueThreshMinIT.text()))
         else:
-            QMessageBox.information(self, 'Error', 'Please Enter A Good Value')
+            QMessageBox.information(self, 'Error', 'Outside threshold min val')
 
-        if int(self.valueThreshMaxIT.text()) > 0 and int(self.valueThreshMaxIT.text()) < 1000:
+        if int(self.valueThreshMaxIT.text()) > 0 and int(self.valueThreshMaxIT.text()) < 1001:
             self.sliderThreshMaxIT.setValue(int(self.valueThreshMaxIT.text()))
         else:
-            QMessageBox.information(self, 'Error', 'Please Enter A Good Value')
+            QMessageBox.information(self, 'Error', 'Outside threshold max val')
 
         if int(self.valueFilterByAreaIT.text()) > 0 and int(self.valueFilterByAreaIT.text()) < 360:
             self.sliderFilterByAreaIT.setValue(int(self.valueFilterByAreaIT.text()))
         else:
-            QMessageBox.information(self, 'Error', 'Please Enter A Good Value')
+            QMessageBox.information(self, 'Error', 'Outside threshold min area value')
 
-        if int(self.valueFilterByCircIT.text()) > 0 and int(self.valueFilterByCircIT.text()) < 360:
+        if int(self.valueFilterByAreaMaxIT.text()) > 0 and int(self.valueFilterByAreaMaxIT.text()) < 1001:
+            self.sliderFilterByAreaMaxIT.setValue(int(self.valueFilterByAreaMaxIT.text()))
+        else:
+            QMessageBox.information(self, 'Error', 'Outside max area value')
+
+        if int(self.valueFilterByCircIT.text()) > 0 and int(self.valueFilterByCircIT.text()) < 101:
             self.sliderFilterByCircIT.setValue(int(self.valueFilterByCircIT.text()))
         else:
-            QMessageBox.information(self, 'Error', 'Please Enter A Good Value')
+            QMessageBox.information(self, 'Error', 'Circularity must be between 0-100')
 
         if self.boolImageIsLoaded is True:
             self.IT_IP_ball_detect()
@@ -540,6 +587,7 @@ class veryCoolMan(QMainWindow):
         self.valueThreshMaxIT.setText(str(self.sliderThreshMaxIT.value()))
         self.valueFilterByAreaIT.setText(str(self.sliderFilterByAreaIT.value()))
         self.valueFilterByCircIT.setText(str(self.sliderFilterByCircIT.value()))
+        self.valueFilterByAreaMaxIT.setText(str(self.sliderFilterByAreaMaxIT.value()))
 
         if self.boolImageIsLoaded is True:
             self.IT_IP_ball_detect()
