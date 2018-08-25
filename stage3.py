@@ -43,12 +43,24 @@ class veryCoolMan(QMainWindow):
 
         self.image = None
         self.processedImage = None
+        self.imgCropped = None
 
         # bools to see if things have been loaded
         self.boolImageIsLoaded = False
         self.boolVideoIsLoaded = False
         self.boolBallTrackingPermitted = False
         self.boolNeedsBWFlip = True
+        self.boolValuesCommitted = False
+
+        # Bools to keep the sliders from updating when we are initializing
+        self.boolMaskSlidersAdjust = False
+        self.boolBallDetectSliderAdjust = False
+
+        # initialize the radio buttons
+        self.radCrop.setChecked(False)
+        self.radFull.setChecked(True)
+        self.radCrop.clicked.connect(self.IT_radio_toggle)
+        self.radFull.clicked.connect(self.IT_radio_toggle)
 
         # connect video start / end frame sliders to change those values
         self.videoFrontSlider.valueChanged.connect(self.VT_slider_frame_numbers)
@@ -85,11 +97,15 @@ class veryCoolMan(QMainWindow):
         self.colorButtonIM.clicked.connect(self.IT_open_color_dialog)
 
         self.btnCommitParamsIT.clicked.connect(self.IT_check_commit_params)
+        self.btnSelectROIIT.clicked.connect(self.IT_IP_roi)
+        self.btnCropActionIT.clicked.connect(self.IT_IP_swap)
+        self.btnResetImgIT.clicked.connect(self.IT_IP_reset_image)
 
         self.chkDilate.stateChanged.connect(self.IT_IP_morphology)
         self.chkClose.stateChanged.connect(self.IT_IP_morphology)
 
         self.chkBallDetect.stateChanged.connect(self.IT_enab_ball_detect)
+        self.chkMorphVT.stateChanged.connect(self.IT_enab_morph)
         self.chkInRangeMasking.stateChanged.connect(self.IT_enab_masking)
 
         # now, whenever we change tabs, we double check to make sure the correct
@@ -103,12 +119,25 @@ class veryCoolMan(QMainWindow):
         # Sets startup tab to video tab
         self.tabWidget.setCurrentIndex(0)
 
+    def IT_radio_toggle(self):
+        print('got to the toggle! GET TO THE CHOPPAHH!')
+        if self.radFull.isChecked():
+            print('slid into the DMs')
+            self.radCrop.setChecked(True)
+            self.radFull.setChecked(False)
+        if self.radCrop.isChecked():
+            print('slid off the slip and slide')
+            self.radCrop.setChecked(False)
+            self.radFull.setChecked(True)
+
     def IT_check_commit_params(self):
 
         if self.chkHSVCommitIT.isChecked():
             if self.chkMorphCommitIT.isChecked():
                 if self.chkBallDetectCommitIT.isChecked():
                     self.VT_ball_params()
+                    self.boolBallTrackingPermitted = True
+                    self.VT_update_button_status()
 
         else:
             QMessageBox.information(self, 'Error', 'Not All Parameters Correct')
@@ -356,120 +385,166 @@ class veryCoolMan(QMainWindow):
 
         if self.boolImageIsLoaded is True:
             self.toolBox.setEnabled(True)
+            # We want to enable the overall tab widget but not enable all sliders
+            self.chkClose.setEnabled(False)
+            self.chkDilate.setEnabled(False)
+            self.kernelSizeValue.setEnabled(False)
+            self.iterValue.setEnabled(False)
             self.btnCommitParamsIT.setEnabled(True)
 
-    def IT_enab_masking(self):  # enables inRange masking in IT, sets default vals and calls mask
-        self.uHSlider.setValue(359)
-        self.uSSlider.setValue(65)
-        self.uVSlider.setValue(254)
-        self.lHSlider.setValue(0)
-        self.lSSlider.setValue(0)
-        self.lVSlider.setValue(39)
+    def IT_IP_roi(self):
+        self.roi = cv2.selectROI(self.processedImage)
+        self.textBrowser.setText(str(self.roi))
+        # Crop image
+        self.imgCropped = self.processedImage[int(
+            self.roi[1]):int(self.roi[1]+self.roi[3]), int(self.roi[0]):int(self.roi[0]+self.roi[2])]
 
-        if self.boolImageIsLoaded is True:
-            self.IT_IP_inrange_mask()
+    def IT_IP_swap(self):
+        self.processedImage = self.imgCropped.copy()
+        self.IT_display_image(1)
+
+    def IT_IP_reset_image(self):
+        self.processedImage = self.globalImage.copy()
+        self.chkInRangeMasking.setChecked(False)
+        self.chkMorphVT.setChecked(False)
+        self.chkBallDetect.setChecked(False)
+        self.IT_display_image(1)
+
+    def IT_enab_masking(self):  # enables inRange masking in IT, sets default vals and calls mask
+        if self.chkInRangeMasking.isChecked() is True:
+
+            print('enabling all the crap')
+            self.uHSlider.setEnabled(True)
+            self.uSSlider.setEnabled(True)
+            self.uVSlider.setEnabled(True)
+            self.lHSlider.setEnabled(True)
+            self.lSSlider.setEnabled(True)
+            self.lVSlider.setEnabled(True)
+            self.uHValue.setEnabled(True)
+            self.uSValue.setEnabled(True)
+            self.uVValue.setEnabled(True)
+            self.lHValue.setEnabled(True)
+            self.lSValue.setEnabled(True)
+            self.lVValue.setEnabled(True)
+
+            # Set up all the masking sliders and check boxes
+            self.boolMaskSlidersAdjust = False
+            self.uHSlider.setValue(359)
+            self.uSSlider.setValue(65)
+            self.uVSlider.setValue(254)
+            self.lHSlider.setValue(0)
+            self.lSSlider.setValue(0)
+            self.lVSlider.setValue(39)
+
+            # these two arrays hold the upper and lower color bounds for the HSV mask
+            self.globalLowHSV = np.array(
+                [self.lHSlider.value(), self.lSSlider.value(), self.lVSlider.value()])
+            self.globalHighHSV = np.array(
+                [self.uHSlider.value(), self.uSSlider.value(), self.uVSlider.value()])
+
+            self.boolMaskSlidersAdjust = True
+
+            if self.boolImageIsLoaded is True:
+                self.IT_IP_inrange_mask()
+        else:
+            # Disable all the crap
+            print('Disabling lots of crap')
+            self.uHSlider.setEnabled(False)
+            self.uSSlider.setEnabled(False)
+            self.uVSlider.setEnabled(False)
+            self.lHSlider.setEnabled(False)
+            self.lSSlider.setEnabled(False)
+            self.lVSlider.setEnabled(False)
+            self.uHValue.setEnabled(False)
+            self.uSValue.setEnabled(False)
+            self.uVValue.setEnabled(False)
+            self.lHValue.setEnabled(False)
+            self.lSValue.setEnabled(False)
+            self.lVValue.setEnabled(False)
+
+    def IT_enab_morph(self):
+
+        if self.chkMorphVT.isChecked():
+            self.kernelSizeValue.setEnabled(True)
+            self.iterValue.setEnabled(True)
+            self.kernelSizeValue.setText('4')
+            self.iterValue.setText('1')
+            self.chkClose.setEnabled(True)
+            self.chkDilate.setEnabled(True)
+
+        else:
+            self.kernelSizeValue.setText(' ')
+            self.iterValue.setText(' ')
+            self.chkClose.setEnabled(False)
+            self.chkDilate.setEnabled(False)
+            self.kernelSizeValue.setEnabled(False)
+            self.iterValue.setEnabled(False)
 
     def IT_enab_ball_detect(self):  # enables ball detect in IT, sets default vals and calls ball detect
 
-        # Checks the boxes for all three thingies automatically
-        self.chkEnableThreshIT.setChecked(True)
-        self.chkFilterByAreaIT.setChecked(True)
-        self.chkFilterByCircIT.setChecked(True)
+        if self.chkBallDetect.isChecked() is True:
 
-        self.sliderThreshMinIT.setValue(10)
-        self.sliderThreshMaxIT.setValue(150)
-        self.sliderFilterByAreaIT.setValue(120)
-        self.sliderFilterByAreaMaxIT.setValue(1000)
-        self.sliderFilterByCircIT.setValue(60)
+            # Turn on all the crap
+            self.chkEnableThreshIT.setEnabled(True)
+            self.chkFilterByAreaIT.setEnabled(True)
+            self.chkFilterByCircIT.setEnabled(True)
+            self.sliderThreshMinIT.setEnabled(True)
+            self.sliderThreshMaxIT.setEnabled(True)
+            self.sliderFilterByAreaIT.setEnabled(True)
+            self.sliderFilterByAreaMaxIT.setEnabled(True)
+            self.sliderFilterByCircIT.setEnabled(True)
 
-        # calls the ball detect method
-        self.IT_IP_ball_detect()
+            # Stops the sliders adjusting so we can update values quickly
+            self.boolBallDetectSliderAdjust = False
 
-    def IT_open_color_dialog(self):  # Opens a color picker dialog box in Image Tab
-        colorMAN = QColorDialog.getColor()
-        if self.chkLower.isChecked():
-            self.labelColor.setStyleSheet(
-                "QLabel#labelColor {background-color: %s}" % colorMAN.name())
-            self.colorNameValue.setText(str(colorMAN))
-        if self.chkUpper.isChecked():
-            self.labelColorUpper.setStyleSheet(
-                "QLabel#labelColorUpper {background-color: %s}" % colorMAN.name())
-            self.colorNameValue.setText(str(colorMAN.name()))
+            # Checks the boxes for all three thingies automatically
+            self.chkEnableThreshIT.setChecked(True)
+            self.chkFilterByAreaIT.setChecked(True)
+            self.chkFilterByCircIT.setChecked(True)
 
-    def IT_IP_ball_detect(self):  # Does the processing work to show updated ball in image tab
-        if self.boolImageIsLoaded is True:
-            # Setup SimpleBlobDetector parameters.
-            self.params = cv2.SimpleBlobDetector_Params()
+            self.sliderThreshMinIT.setValue(10)
+            self.sliderThreshMaxIT.setValue(150)
+            self.sliderFilterByAreaIT.setValue(120)
+            self.sliderFilterByAreaMaxIT.setValue(500000)
+            self.sliderFilterByCircIT.setValue(60)
 
-            # Change thresholds
-            self.params.minThreshold = self.sliderThreshMinIT.value()
-            self.params.maxThreshold = self.sliderThreshMaxIT.value()
+            # Turns back on the auto update image after slider is moved
+            self.boolBallDetectSliderAdjust = True
 
-            # Filter by Area.
-            if self.chkFilterByAreaIT.isChecked():
-                self.params.filterByArea = True
-                self.params.minArea = self.sliderFilterByAreaIT.value()
-                self.params.maxArea = self.sliderFilterByAreaMaxIT.value()
-            else:
-                self.params.filterByArea = False
+            # Call the actual ball detect function if an image is loaded
+            if self.boolImageIsLoaded is True:
+                self.IT_IP_ball_detect()
+        else:
+            # Stops the sliders adjusting so we can update values quickly
+            self.boolBallDetectSliderAdjust = False
 
-            # Filter by Circularity
-            if self.chkFilterByAreaIT.isChecked():
-                self.params.filterByCircularity = True
-                self.params.minCircularity = 0.6
-            else:
-                self.params.filterByCircularity = False
+            self.chkEnableThreshIT.setChecked(False)
+            self.chkFilterByAreaIT.setChecked(False)
+            self.chkFilterByCircIT.setChecked(False)
+            self.sliderThreshMinIT.setValue(1)
+            self.sliderThreshMaxIT.setValue(1)
+            self.sliderFilterByAreaIT.setValue(1)
+            self.sliderFilterByAreaMaxIT.setValue(1)
+            self.sliderFilterByCircIT.setValue(1)
 
-            # Change thresholds
-            # self.params.minThreshold = self.sliderThreshMinIT.value()
-            # self.params.maxThreshold = self.sliderThreshMaxIT.value()
+            # Turns back on the auto update image after slider is moved
+            self.boolBallDetectSliderAdjust = True
 
-            # Filter by Area.
-            # self.params.filterByArea = True
-            # self.params.minArea = self.sliderFilterByAreaIT.value()
-
-            # Filter by Circularity
-            # self.params.filterByCircularity = True
-            # self.params.minCircularity = 0.6
-            # self.params.minCircularity = self.sliderFilterByCircIT.value()
-            self.boolBallTrackingPermitted = True
-
-            # Perform SimpleBlobDetector Ball Detection
-            frame = self.processedImage
-            blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-
-            # if self.boolNeedsBWFlip is True:
-            mask = cv2.bitwise_not(blurred)
-            #    self.boolNeedsBWFlip = False
-
-            # Create a detector with the parameters
-            detector = cv2.SimpleBlobDetector_create(self.params)
-            holderHolder = self.globalImage
-            # Detect blobs.
-            keypoints = detector.detect(mask)
-            if len(keypoints) > 0:
-
-                x = keypoints[0].pt[0]
-                y = keypoints[0].pt[1]
-                # s = keypoints[0].size  # diameter
-                cv2.circle(holderHolder, (int(x), int(y)), 2, (0, 0, 255), -1)
-                cv2.putText(holderHolder, 'Ball 1', (int(x)+10, int(y)-10),
-                            cv2.FONT_HERSHEY_SIMPLEX,  .5, (50, 255, 50), 2)
-
-            else:
-                print('no keypoints found')
-            self.processedImage = holderHolder
-            self.IT_display_image(1)
+            # Turn off all the crap
+            self.chkEnableThreshIT.setEnabled(False)
+            self.chkFilterByAreaIT.setEnabled(False)
+            self.chkFilterByCircIT.setEnabled(False)
+            self.sliderThreshMinIT.setEnabled(False)
+            self.sliderThreshMaxIT.setEnabled(False)
+            self.sliderFilterByAreaIT.setEnabled(False)
+            self.sliderFilterByAreaMaxIT.setEnabled(False)
+            self.sliderFilterByCircIT.setEnabled(False)
 
     def IT_IP_inrange_mask(self):  # Applies the inRange color mask to the image in the Image Tab
-        # these two arrays hold the upper and lower color bounds for the HSV mask
-        self.globalLowHSV = np.array(
-            [self.lHSlider.value(), self.lSSlider.value(), self.lVSlider.value()])
-        self.globalHighHSV = np.array(
-            [self.uHSlider.value(), self.uSSlider.value(), self.uVSlider.value()])
+
         # "hsv" is an image file local to this function that saves the input
         # image as a file in the HSV color format
-        hsv = cv2.cvtColor(self.globalImage, cv2.COLOR_BGR2HSV)
+        hsv = cv2.cvtColor(self.processedImage, cv2.COLOR_BGR2HSV)
 
         # make an image var called "mask" that takes the masked image for later use
         mask = cv2.inRange(hsv, self.globalLowHSV, self.globalHighHSV)
@@ -499,6 +574,78 @@ class veryCoolMan(QMainWindow):
             self.processedImage = closing
             self.justMaskedImage = self.processedImage.copy()
             self.IT_display_image(1)
+
+    def IT_IP_ball_detect(self):  # Does the processing work to show updated ball in image tab
+        if self.boolImageIsLoaded is True:
+            # Setup SimpleBlobDetector parameters.
+            self.params = cv2.SimpleBlobDetector_Params()
+
+            # Change thresholds
+            self.params.minThreshold = self.sliderThreshMinIT.value()
+            self.params.maxThreshold = self.sliderThreshMaxIT.value()
+
+            # Filter by Area.
+            if self.chkFilterByAreaIT.isChecked():
+                self.params.filterByArea = True
+                self.params.minArea = self.sliderFilterByAreaIT.value()
+                self.params.maxArea = self.sliderFilterByAreaMaxIT.value()
+            else:
+                self.params.filterByArea = False
+
+            # Filter by Circularity
+            if self.chkFilterByAreaIT.isChecked():
+                self.params.filterByCircularity = True
+                self.params.minCircularity = 0.6
+            else:
+                self.params.filterByCircularity = False
+
+            # Perform SimpleBlobDetector Ball Detection
+            frame = self.processedImage
+            blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+
+            # if self.boolNeedsBWFlip is True:
+            mask = cv2.bitwise_not(blurred)
+            #    self.boolNeedsBWFlip = False
+
+            # Create a detector with the parameters
+            detector = cv2.SimpleBlobDetector_create(self.params)
+            if self.radFull.isChecked():
+                holderHolder = self.globalImage
+            else:
+                if self.imgCropped is None:
+                    QMessageBox.information(
+                        self, 'Error', 'No Cropped Image Found.  Using Full Image.')
+                    holderHolder = self.globalImage
+                else:
+                    holderHolder = self.imgCropped
+            # Detect blobs.
+            keypoints = detector.detect(mask)
+            if len(keypoints) > 0:
+                self.textBrowser.setText('At Least One Ball Was Found')
+                x = keypoints[0].pt[0]
+                y = keypoints[0].pt[1]
+                # s = keypoints[0].size  # diameter
+                # cv2.circle(holderHolder, (int(x), int(y)), 2, (0, 0, 255), -1)
+                holderHolder = cv2.drawKeypoints(holderHolder, keypoints, np.array(
+                    []), (0, 0, 255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+                cv2.putText(holderHolder, 'Ball 1', (int(x)+10, int(y)-10),
+                            cv2.FONT_HERSHEY_SIMPLEX,  .5, (50, 255, 50), 2)
+
+            else:
+                self.textBrowser.setText('No Balls Found')
+            self.processedImage = holderHolder
+            self.IT_display_image(1)
+
+    def IT_open_color_dialog(self):  # Opens a color picker dialog box in Image Tab
+        colorMAN = QColorDialog.getColor()
+        if self.chkLower.isChecked():
+            self.labelColor.setStyleSheet(
+                "QLabel#labelColor {background-color: %s}" % colorMAN.name())
+            self.colorNameValue.setText(str(colorMAN))
+        if self.chkUpper.isChecked():
+            self.labelColorUpper.setStyleSheet(
+                "QLabel#labelColorUpper {background-color: %s}" % colorMAN.name())
+            self.colorNameValue.setText(str(colorMAN.name()))
 
     def update_mask_slider_values(self):  # Updates mask slider values in IT
 
@@ -534,7 +681,8 @@ class veryCoolMan(QMainWindow):
 
         # If an image is loaded, call the update mask function
         if self.boolImageIsLoaded is True:
-            self.IT_IP_inrange_mask()
+            if self.boolMaskSlidersAdjust is True:
+                self.IT_IP_inrange_mask()
 
     def update_mask_textbox_values(self):  # Updates mask textbox values in IT
 
@@ -547,7 +695,8 @@ class veryCoolMan(QMainWindow):
 
         # if an image is loaded, call the update mask function
         if self.boolImageIsLoaded is True:
-            self.IT_IP_inrange_mask()
+            if self.boolMaskSlidersAdjust is True:
+                self.IT_IP_inrange_mask()
         else:
             print('no image loaded')
 
@@ -568,7 +717,7 @@ class veryCoolMan(QMainWindow):
         else:
             QMessageBox.information(self, 'Error', 'Outside threshold min area value')
 
-        if int(self.valueFilterByAreaMaxIT.text()) > 0 and int(self.valueFilterByAreaMaxIT.text()) < 1001:
+        if int(self.valueFilterByAreaMaxIT.text()) > 0 and int(self.valueFilterByAreaMaxIT.text()) < 9000001:
             self.sliderFilterByAreaMaxIT.setValue(int(self.valueFilterByAreaMaxIT.text()))
         else:
             QMessageBox.information(self, 'Error', 'Outside max area value')
@@ -579,7 +728,8 @@ class veryCoolMan(QMainWindow):
             QMessageBox.information(self, 'Error', 'Circularity must be between 0-100')
 
         if self.boolImageIsLoaded is True:
-            self.IT_IP_ball_detect()
+            if self.boolBallDetectSliderAdjust is True:
+                self.IT_IP_ball_detect()
 
     def update_ball_detect_textbox_values(self):  # Updates ball detect text boxes in IT
 
@@ -590,7 +740,8 @@ class veryCoolMan(QMainWindow):
         self.valueFilterByAreaMaxIT.setText(str(self.sliderFilterByAreaMaxIT.value()))
 
         if self.boolImageIsLoaded is True:
-            self.IT_IP_ball_detect()
+            if self.boolBallDetectSliderAdjust is True:
+                self.IT_IP_ball_detect()
 
     def MB_load_image(self):  # Load an image to be processed in the image tab
         # self.loadImage('small.PNG')
